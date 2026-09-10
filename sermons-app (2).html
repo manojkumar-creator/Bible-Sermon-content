@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-ancestors 'none';">
+<title>The Word Study · దైవ వాక్య పాఠాలు</title>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22The%20Word%20Study%22%2C%22short_name%22%3A%22Word%20Study%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F7F2E7%22%2C%22theme_color%22%3A%221B2340%22%7D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+Telugu:wght@500;700&family=Noto+Sans+Telugu:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2340; --ink-soft:#3A3F5C;
+    --paper:#FBF7EE; --paper-panel:#F1ECDD; --line:#DED4B8;
+    --gold:#9A6B24; --gold-soft:#F3E6C6; --maroon:#7A2E2E; --ok:#3E6B4F;
+    --shadow:0 1px 2px rgba(27,35,64,.06), 0 8px 24px rgba(27,35,64,.06);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  .te{font-family:'Noto Sans Telugu','Inter',sans-serif;}
+  h1,h2,h3,.serif{font-family:'Spectral',serif;}
+  h1.te,h2.te,h3.te,.serif.te{font-family:'Noto Serif Telugu','Noto Sans Telugu',serif;}
+
+  #app{display:grid;grid-template-columns:300px 1fr;min-height:100vh;}
+  @media (max-width:860px){ #app{grid-template-columns:1fr;} }
+
+  header.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--ink);color:var(--paper);position:sticky;top:0;z-index:20;}
+  header.top .brand{display:flex;flex-direction:column;line-height:1.15;flex:1;min-width:0;}
+  header.top .brand .en{font-family:'Spectral',serif;font-weight:600;font-size:17px;}
+  header.top .brand .te{font-family:'Noto Serif Telugu',serif;font-size:13px;color:#C9CEE8;}
+  .icon-btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:var(--paper);border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .icon-btn:hover{background:rgba(255,255,255,.1);}
+  #menuToggle{display:none;}
+  @media (max-width:860px){ #menuToggle{display:inline-flex;} }
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:#7FBF97;display:inline-block;transition:background .3s;}
+  .sync-dot.pending{background:#E0B23C;}
+  .sync-label{font-size:11px;color:#B9BFE0;display:flex;align-items:center;gap:6px;}
+
+  nav.index{background:var(--paper-panel);border-right:1px solid var(--line);padding:16px 10px 40px;overflow-y:auto;}
+  @media (max-width:860px){
+    nav.index{position:fixed;top:57px;left:0;bottom:0;width:290px;transform:translateX(-100%);transition:transform .25s ease;z-index:30;box-shadow:var(--shadow);}
+    nav.index.open{transform:translateX(0);}
+  }
+  nav.index .section-label{font-size:11px;letter-spacing:.03em;color:var(--ink-soft);padding:10px 10px 4px;}
+  ol.toc{list-style:none;margin:0;padding:0;}
+  .toc-link{display:flex;align-items:flex-start;gap:10px;padding:10px 10px;border-radius:8px;cursor:pointer;color:var(--ink);text-decoration:none;}
+  .toc-link:hover{background:var(--gold-soft);}
+  .toc-link.active{background:var(--ink);color:var(--paper);}
+  .toc-num{font-family:'Spectral',serif;font-weight:600;font-size:13px;color:var(--gold);min-width:20px;padding-top:1px;}
+  .toc-link.active .toc-num{color:var(--gold-soft);}
+  .toc-title{font-size:14px;line-height:1.3;flex:1;}
+  .toc-title .te{display:block;font-size:12.5px;opacity:.8;margin-top:2px;}
+
+  main{padding:28px 24px 80px;max-width:820px;width:100%;}
+  .sermon-head{border-bottom:2px solid var(--line);padding-bottom:16px;margin-bottom:20px;}
+  .sermon-eyebrow{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:8px;}
+  .sermon-title{font-size:28px;margin:0 0 2px;font-weight:600;}
+  .sermon-title.te{font-size:22px;color:var(--ink-soft);margin:0 0 10px;}
+  .sermon-subtitle{font-size:15px;color:var(--ink-soft);margin:0 0 3px;font-style:italic;}
+  .sermon-subtitle.te{font-style:normal;margin:0 0 12px;}
+  .refs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .ref-chip{font-size:12px;background:var(--gold-soft);color:#5C3E10;border:1px solid #E4D19B;padding:5px 10px;border-radius:20px;line-height:1.5;}
+  .ref-chip .te{display:block;font-size:11.5px;opacity:.85;}
+
+  .toolbar{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .btn:hover{border-color:var(--ink);}
+  .btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+  .bl-block{margin:0 0 20px;max-width:74ch;}
+  .bl-block .en{font-size:16.5px;line-height:1.7;margin:0 0 6px;}
+  .bl-block .te{font-size:17px;line-height:1.85;margin:0;color:var(--ink-soft);}
+  h3.bl-h{margin:28px 0 2px;}
+  h3.bl-h .en{font-size:19px;font-weight:600;color:var(--ink);}
+  h3.bl-h .te{font-size:17.5px;font-weight:600;color:var(--ink-soft);margin-top:2px;}
+
+  .verse{border-left:3px solid var(--gold);background:var(--gold-soft);padding:14px 16px;margin:18px 0;border-radius:0 8px 8px 0;}
+  .verse .en{font-family:'Spectral',serif;font-style:italic;font-size:16px;color:#4a3a12;margin:0 0 8px;}
+  .verse .te{font-family:'Noto Serif Telugu',serif;font-size:16.5px;color:#4a3a12;margin:0;}
+  .verse cite{display:block;font-family:'Inter',sans-serif;font-size:11.5px;color:var(--gold);margin-top:8px;font-weight:600;font-style:normal;}
+  .verse cite .te{display:inline;font-size:11.5px;font-family:'Noto Sans Telugu',sans-serif;}
+  mark.hl{background:#F3D98B;padding:0 2px;border-radius:2px;}
+  b, strong{color:var(--maroon);font-weight:700;}
+
+  .story-box{margin-top:26px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:18px;}
+  .story-box h4{margin:0 0 10px;font-size:13px;color:var(--maroon);letter-spacing:.02em;}
+  .story-box h4 .te{display:block;font-size:12.5px;font-weight:600;margin-top:2px;}
+  .story-box p.en{font-size:15px;line-height:1.7;margin:0 0 10px;color:var(--ink-soft);}
+  .story-box p.te{font-size:15.5px;line-height:1.8;margin:0;color:var(--ink-soft);}
+  .story-note{font-size:11px;color:#8b8265;margin-top:10px;font-style:italic;}
+
+  .notes-box{margin-top:26px;}
+  .notes-box h4{margin:0 0 8px;font-size:14px;color:var(--ink-soft);}
+  .notes-box h4 .te{font-size:13px;}
+  textarea.notes{width:100%;min-height:120px;border:1px solid var(--line);border-radius:8px;padding:12px;font:inherit;font-size:14.5px;color:var(--ink);resize:vertical;background:#fff;}
+  .notes-status{font-size:11px;color:var(--ok);height:14px;margin-top:4px;}
+
+  .update-toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:30px;font-size:13px;box-shadow:var(--shadow);transition:transform .3s ease;z-index:50;display:flex;align-items:center;gap:10px;}
+  .update-toast.show{transform:translateX(-50%) translateY(0);}
+  .update-toast button{background:var(--gold);border:none;color:#241a06;padding:5px 11px;border-radius:16px;font-size:12px;cursor:pointer;font-weight:600;}
+
+  @media print{
+    header.top, nav.index, .toolbar, .notes-box, .update-toast, #menuToggle{display:none !important;}
+    #app{display:block;}
+    main{max-width:100%;padding:0;}
+    body{background:#fff;}
+    .verse{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <button class="icon-btn" id="menuToggle" aria-label="Toggle index">☰ Index</button>
+    <div class="brand">
+      <span class="en">The Word Study</span>
+      <span class="te">దైవ వాక్య పాఠాలు</span>
+    </div>
+    <span class="sync-label"><span class="sync-dot" id="syncDot"></span> <span id="syncText">Up to date · తాజాగా ఉంది</span></span>
+  </header>
+
+  <nav class="index" id="indexPanel">
+    <div class="section-label">SEQUENCE · క్రమం</div>
+    <ol class="toc" id="tocList"></ol>
+  </nav>
+
+  <main id="main"><div style="padding:60px 10px;text-align:center;color:var(--ink-soft);">Loading…</div></main>
+</div>
+
+<div class="update-toast" id="updateToast">
+  <span>New content available · కొత్త విషయం అందుబాటులో ఉంది</span>
+  <button id="applyUpdate">Refresh</button>
+</div>
+
+<script>
+/* =========================================================================
+   THE WORD STUDY — fully bilingual (English + Telugu together throughout)
+   Bible sermon app. Single file, works fully offline. Notes are stored only
+   on this device (IndexedDB) — nothing is ever sent anywhere.
+
+   OPTIONAL LIVE SYNC: host a JSON copy of the SERMONS array on your own web
+   space and set CONTENT_URL to it. The app then quietly checks every few
+   minutes and offers a one-tap refresh — without disturbing whoever is
+   reading, and without needing to reinstall anything.
+   ========================================================================= */
+const CONTENT_URL = "https://raw.githubusercontent.com/manojkumar-creator/Bible-Sermon-content/refs/heads/main/content.json?token=GHSAT0AAAAAAEISD5P6SRDFRNLM6HDXXYUK2VCSGWA";
+const SYNC_INTERVAL_MS = 5 * 60 * 1000;
+
+// Each block: {type:'h'|'p'|'verse', en, te, ref?:{en,te}}
+// Inline formatting inside en/te text: **bold** and ==highlight==
+let SERMONS = [
+
+{ id:"god", order:1, status:"ready",
+  title_en:"God", title_te:"దేవుడు",
+  subtitle_en:"Who is God? How is God? Where is God? What is God?",
+  subtitle_te:"దేవుడు ఎవరు? దేవుడు ఎలా ఉంటాడు? దేవుడు ఎక్కడ ఉంటాడు? దేవుడు ఏమిటి?",
+  refs:[{en:"Exodus 3:14", te:"నిర్గమకాండము 3:14"},{en:"John 4:24", te:"యోహాను 4:24"},{en:"1 John 4:8,16", te:"1 యోహాను 4:8,16"},{en:"Psalm 139:7-10", te:"కీర్తనలు 139:7-10"},{en:"Deuteronomy 6:4", te:"ద్వితీయోపదేశకాండము 6:4"}],
+  body:[
+    {type:"h", en:"Who is God?", te:"దేవుడు ఎవరు?"},
+    {type:"p", en:"God is not one god among many, and He is not a force we invented to explain what we cannot understand. He is the **self-existing One** — the One who simply *is*. When Moses asked for His name, God answered, \"I AM WHO I AM\" (Exodus 3:14). Every created thing owes its existence to something else; God alone owes His existence to no one.",
+      te:"దేవుడు అనేక దేవుళ్లలో ఒకడు కాదు, మనం అర్థం చేసుకోలేని దానిని వివరించడానికి కల్పించిన శక్తి కాదు. ఆయనే **స్వయంభువుడు** — ఆయనే ఉన్నవాడు. మోషే ఆయన పేరు అడిగినప్పుడు, దేవుడు \"నేనైయున్నవాడను నేనే\" అని జవాబిచ్చాడు (నిర్గమకాండము 3:14). సృష్టించబడిన ప్రతిదీ మరొకదానికి తన ఉనికిని రుణపడి ఉంటుంది; దేవుడు మాత్రమే ఎవరికీ రుణపడి లేడు."},
+    {type:"verse", en:"God said to Moses, \"I AM WHO I AM.\" And He said, \"Say this to the people of Israel: 'I AM has sent me to you.'\"",
+      te:"దేవుడు మోషేతో, \"నేనైయున్నవాడను నేనే\" అని చెప్పాడు. \"నేనైయున్నవాడు నన్ను మీ యొద్దకు పంపించెను అని ఇశ్రాయేలీయులతో చెప్పుము\" అని ఆయన అన్నాడు.",
+      ref:{en:"Exodus 3:14", te:"నిర్గమకాండము 3:14"}},
+    {type:"h", en:"How is God?", te:"దేవుడు ఎలా ఉంటాడు?"},
+    {type:"p", en:"Scripture describes His **character** before His appearance. He is love (1 John 4:8), He is light with no darkness in Him (1 John 1:5), He is holy, holy, holy (Isaiah 6:3), and He does not change (Malachi 3:6). He is one God, eternally existing as Father, Son, and Holy Spirit (Deuteronomy 6:4; Matthew 28:19) — not three gods, and not one person wearing three masks, but one God known fully in three persons.",
+      te:"లేఖనాలు దేవుని రూపాన్ని కాదు, ఆయన **స్వభావాన్ని** మొదట వివరిస్తాయి. ఆయన ప్రేమ (1 యోహాను 4:8), ఆయనలో చీకటి ఏమాత్రం లేని వెలుగు (1 యోహాను 1:5), ఆయన పరిశుద్ధుడు, పరిశుద్ధుడు, పరిశుద్ధుడు (యెషయా 6:3), ఆయన మారడు (మలాకీ 3:6). ఆయన ఒక్కడే దేవుడు, తండ్రి, కుమారుడు, పరిశుద్ధాత్మగా శాశ్వతంగా ఉన్నవాడు (ద్వితీయోపదేశకాండము 6:4; మత్తయి 28:19) — ముగ్గురు దేవుళ్లు కాదు, ఒక వ్యక్తి మూడు ముసుగులు ధరించడం కాదు, ఒక్కడే దేవుడు మూడు వ్యక్తులలో పూర్తిగా తెలియబడతాడు."},
+    {type:"h", en:"Where is God?", te:"దేవుడు ఎక్కడ ఉంటాడు?"},
+    {type:"p", en:"God is not confined to a temple, a mountain, or a nation. He is ==everywhere at once== — fully present in heaven and fully present beside you right now.",
+      te:"దేవుడు ఒక దేవాలయానికో, పర్వతానికో, ఒక జాతికో పరిమితం కాదు. ఆయన ఒకేసారి ==ప్రతిచోటా== ఉంటాడు — పరలోకంలో పూర్తిగా, ఇప్పుడు నీ పక్కనే పూర్తిగా ఉంటాడు."},
+    {type:"verse", en:"Where shall I go from your Spirit? Or where shall I flee from your presence? If I ascend to heaven, you are there! If I make my bed in Sheol, you are there!",
+      te:"నీ ఆత్మయొద్దనుండి నేనెక్కడికి వెళ్లగలను? నీ సన్నిధినుండి నేనెక్కడికి పారిపోగలను? నేను ఆకాశమునకు ఆరోహణమైతే నీవు అక్కడ ఉన్నావు; పాతాళమందు నా పడక వేసినను నీవు అక్కడ ఉన్నావు.",
+      ref:{en:"Psalm 139:7-8", te:"కీర్తనలు 139:7-8"}},
+    {type:"h", en:"What is God?", te:"దేవుడు ఏమిటి?"},
+    {type:"p", en:"God is Spirit (John 4:24) — not made of matter, and no image or idol can contain Him. He is Creator, not creature; infinite, not limited; unchanging, not shifting with our moods. He is **eternal power and wisdom**, and yet He chooses to be personal — a Father who knows your name.",
+      te:"దేవుడు ఆత్మ (యోహాను 4:24) — ఆయన పదార్థంతో చేయబడలేదు, ఏ విగ్రహం ఆయనను ఇమడ్చలేదు. ఆయన సృష్టికర్త, సృష్టి కాదు; అనంతుడు, పరిమితుడు కాదు; మార్పులేనివాడు, మన మనోభావాలతో మారేవాడు కాదు. ఆయన **శాశ్వతమైన శక్తి మరియు జ్ఞానం**, అయినా ఆయన వ్యక్తిగతంగా ఉండాలని ఎంచుకుంటాడు — నీ పేరు తెలిసిన తండ్రిగా."}
+  ],
+  story_en:"A little girl once got separated from her father in a crowded railway station. She stood crying, certain she was lost. But her father never lost sight of her — within moments he was there, lifting her up. She thought she was lost to him; she never was. That is how God's presence works: we may feel far from Him, but Psalm 139 tells us He has never once looked away.",
+  story_te:"ఒక చిన్న అమ్మాయి రద్దీగా ఉన్న రైల్వే స్టేషన్‌లో తన తండ్రి నుండి తప్పిపోయింది. తాను తప్పిపోయానని అనుకుని ఏడుస్తూ నిలబడింది. కానీ ఆమె తండ్రి ఆమెను ఒక్క క్షణం కూడా కంటికి దూరం చేయలేదు — క్షణాల్లోనే అతను వచ్చి ఆమెను ఎత్తుకున్నాడు. ఆమె తాను తప్పిపోయానని అనుకుంది; కానీ ఆమె అతనికి ఎప్పుడూ తప్పిపోలేదు. దేవుని సన్నిధి అలానే ఉంటుంది: మనం ఆయనకు దూరంగా ఉన్నామని అనిపించవచ్చు, కానీ కీర్తనలు 139 ఆయన ఒక్కసారి కూడా కన్ను తిప్పలేదని మనకు చెబుతుంది."
+},
+
+{ id:"creation", order:2, status:"ready",
+  title_en:"Creation", title_te:"సృష్టి",
+  subtitle_en:"The sequence of creation, and the reason for creation",
+  subtitle_te:"సృష్టి క్రమం మరియు సృష్టి కారణం",
+  refs:[{en:"Genesis 1:1-31", te:"ఆదికాండము 1:1-31"},{en:"Genesis 2:1-25", te:"ఆదికాండము 2:1-25"},{en:"Colossians 1:16", te:"కొలొస్సయులకు 1:16"},{en:"Romans 11:36", te:"రోమీయులకు 11:36"}],
+  body:[
+    {type:"h", en:"The sequence of creation", te:"సృష్టి క్రమం"},
+    {type:"p", en:"In six days, God spoke the universe into order out of formlessness. Day 1: light, separated from darkness. Day 2: the sky. Day 3: dry land, seas, and vegetation. Day 4: sun, moon, and stars. Day 5: sea creatures and birds. Day 6: land animals, and finally **mankind — made in God's own image**. On the seventh day, God rested, establishing a pattern of rest for His people.",
+      te:"ఆరు దినములలో, దేవుడు రూపరహితమైన దానిని క్రమంలోకి మాటలాడాడు. 1వ దినము: వెలుగు, చీకటి నుండి వేరుచేయబడింది. 2వ దినము: ఆకాశము. 3వ దినము: పొడి నేల, సముద్రాలు, మొక్కలు. 4వ దినము: సూర్యుడు, చంద్రుడు, నక్షత్రాలు. 5వ దినము: సముద్ర జీవులు, పక్షులు. 6వ దినము: భూమిపై జంతువులు, చివరకు **మానవజాతి — దేవుని స్వరూపంలో సృష్టించబడింది**. ఏడవ దినమున దేవుడు విశ్రమించాడు, తన ప్రజల కోసం విశ్రాంతి నమూనాను స్థాపించాడు."},
+    {type:"verse", en:"Then God said, \"Let us make man in our image, after our likeness.\" So God created man in his own image, in the image of God he created him; male and female he created them.",
+      te:"దేవుడు, \"మన స్వరూపమందు మన పోలికె చొప్పున నరులను చేయుదము\" అనెను. కావున దేవుడు తన స్వరూపమందు నరుని సృజించెను, దేవుని స్వరూపమందు వాని సృజించెను, పురుషునిగాను స్త్రీగాను వారిని సృజించెను.",
+      ref:{en:"Genesis 1:26-27", te:"ఆదికాండము 1:26-27"}},
+    {type:"p", en:"Notice the order: everything mankind would need — light, water, land, food, and animals — was prepared *before* mankind arrived. Creation was a house made ready before the guest of honor walked in.",
+      te:"క్రమాన్ని గమనించండి: మానవజాతికి అవసరమైన ప్రతిదీ — వెలుగు, నీరు, భూమి, ఆహారం, జంతువులు — మానవుడు రాకముందే సిద్ధం చేయబడింది. అతిథి లోపలికి రాకముందే సిద్ధం చేయబడిన ఇల్లు వంటిది సృష్టి."},
+    {type:"h", en:"The reason for creation", te:"సృష్టి కారణం"},
+    {type:"p", en:"God did not create because He was lonely or incomplete — Father, Son, and Spirit lacked nothing in perfect fellowship before the world began. He created out of the overflow of His love and glory, **not out of need**.",
+      te:"దేవుడు ఒంటరిగా లేదా అసంపూర్ణంగా ఉన్నాడని సృష్టించలేదు — లోకం ప్రారంభమయ్యే ముందు తండ్రి, కుమారుడు, ఆత్మ పరిపూర్ణ సహవాసంలో దేనికీ లోటు లేకుండా ఉన్నారు. ఆయన తన ప్రేమ మరియు మహిమ యొక్క పొంగిపొర్లుట నుండి సృష్టించాడు, **అవసరం వలన కాదు**."},
+    {type:"verse", en:"For from him and through him and to him are all things. To him be glory forever.",
+      te:"సమస్తమును ఆయననుండియు ఆయనద్వారాయు ఆయన నిమిత్తమును ఉన్నవి. యుగముల వరకు మహిమ ఆయనకే కలుగును గాక.",
+      ref:{en:"Romans 11:36", te:"రోమీయులకు 11:36"}},
+    {type:"p", en:"Every person He made, He made ==for His glory==, and mankind specifically for relationship — to walk with Him, know Him, and reflect His character into the world He had made.",
+      te:"ఆయన సృష్టించిన ప్రతి వ్యక్తిని ==తన మహిమ కొరకు== సృష్టించాడు, మానవజాతిని ప్రత్యేకంగా సహవాసం కోసం సృష్టించాడు — తనతో నడవడానికి, తనను తెలుసుకోవడానికి, తాను చేసిన లోకంలో తన స్వభావాన్ని ప్రతిబింబించడానికి."}
+  ],
+  story_en:"A craftsman once spent months building a house before his son was even born — choosing the wood, fitting the windows to catch the morning light, planting a garden he wouldn't see bloom for a year. Friends asked why he worked so carefully for someone who didn't exist yet. He said, \"Everything here is for him. I want him to walk in and know he was expected, not an accident.\" That is the heart behind Genesis 1.",
+  story_te:"ఒక శిల్పి తన కుమారుడు పుట్టకముందే నెలల తరబడి ఒక ఇల్లు కట్టాడు — కలపను ఎంచుకున్నాడు, ఉదయపు వెలుగు వచ్చేలా కిటికీలు అమర్చాడు, ఒక సంవత్సరం వరకు పూయని తోటను నాటాడు. ఇంకా పుట్టని వ్యక్తి కోసం ఎందుకు అంత జాగ్రత్తగా పనిచేశావని మిత్రులు అడిగారు. అతను, \"ఇక్కడ ప్రతిదీ అతని కోసమే. అతను లోపలికి వచ్చి, తాను ప్రమాదవశాత్తు కాదు, ఎదురుచూడబడ్డాడని తెలుసుకోవాలని నేను కోరుకుంటున్నాను\" అని చెప్పాడు. ఆదికాండము 1 వెనుక ఉన్న హృదయం అదే."
+},
+
+{ id:"angels", order:3, status:"ready",
+  title_en:"Angels — Cherubim — Seraphim", title_te:"దూతలు — కెరూబులు — సెరాఫులు",
+  subtitle_en:"The powers and duties of angels, cherubim, and seraphim",
+  subtitle_te:"దూతలు, కెరూబులు, సెరాఫుల శక్తులు మరియు విధులు",
+  refs:[{en:"Hebrews 1:14", te:"హెబ్రీయులకు 1:14"},{en:"Genesis 3:24", te:"ఆదికాండము 3:24"},{en:"Ezekiel 10:1-22", te:"యెహెజ్కేలు 10:1-22"},{en:"Isaiah 6:1-3", te:"యెషయా 6:1-3"}],
+  body:[
+    {type:"h", en:"Angels — messengers and servants", te:"దూతలు — సందేశకులు మరియు సేవకులు"},
+    {type:"p", en:"Angels are created spirit beings — not humans who died and became angels, and never to be worshiped as gods. Scripture calls them \"ministering spirits sent out to serve\" (Hebrews 1:14). They are mighty in strength (Psalm 103:20), innumerable (Hebrews 12:22), deliver God's messages (Luke 1:26-38), protect His people (Psalm 91:11), and will one day gather the elect and carry out judgment (Matthew 13:41).",
+      te:"దూతలు సృష్టించబడిన ఆత్మీయ జీవులు — చనిపోయిన మనుషులు దూతలుగా మారరు, వారిని దేవుళ్లుగా ఆరాధించకూడదు. లేఖనం వారిని \"సేవ చేయుటకు పంపబడిన పరిచారక ఆత్మలు\" అని పిలుస్తుంది (హెబ్రీయులకు 1:14). వారు బలంలో మహాశక్తిగలవారు (కీర్తనలు 103:20), లెక్కకు మించినవారు (హెబ్రీయులకు 12:22), దేవుని సందేశాలను అందిస్తారు (లూకా 1:26-38), ఆయన ప్రజలను కాపాడతారు (కీర్తనలు 91:11), రాబోయే కాలంలో ఏర్పరచబడినవారిని సమకూర్చి తీర్పును నిర్వహిస్తారు (మత్తయి 13:41)."},
+    {type:"verse", en:"Are they not all ministering spirits sent out to serve for the sake of those who are to inherit salvation?",
+      te:"రక్షణను స్వతంత్రించుకొనబోవువారి నిమిత్తము పరిచర్య చేయుటకు పంపబడిన సేవక ఆత్మలు వారందరును కారా?",
+      ref:{en:"Hebrews 1:14", te:"హెబ్రీయులకు 1:14"}},
+    {type:"h", en:"Cherubim — guardians of God's holiness", te:"కెరూబులు — దేవుని పరిశుద్ధతకు కాపరులు"},
+    {type:"p", en:"Cherubim are the highest-ranking guardian angels, associated directly with God's throne and holiness. After Adam and Eve's fall, God placed cherubim with a flaming sword to guard the way to the tree of life (Genesis 3:24). Two golden cherubim overshadowed the mercy seat on the Ark of the Covenant (Exodus 25:18-20). Ezekiel describes them as awe-inspiring, four-faced, four-winged beings who bear up the throne-chariot of God's glory (Ezekiel 10:1-22). Their duty: to guard what is holy and to carry the glory of God.",
+      te:"కెరూబులు అత్యున్నత స్థాయి కాపలా దూతలు, దేవుని సింహాసనానికి, పరిశుద్ధతకు నేరుగా సంబంధించినవారు. ఆదాము హవ్వల పతనం తరువాత, జీవవృక్షం మార్గాన్ని కాపాడటానికి దేవుడు మండుచున్న ఖడ్గంతో కెరూబులను ఉంచాడు (ఆదికాండము 3:24). నిబంధన మందసము పైన ఉన్న కరుణాపీఠముపై రెండు బంగారు కెరూబులు నీడ పరచాయి (నిర్గమకాండము 25:18-20). యెహెజ్కేలు వారిని భయభక్తులు కలిగించే, నాలుగు ముఖాలు, నాలుగు రెక్కలు గల జీవులుగా, దేవుని మహిమ రథాన్ని మోసేవారిగా వర్ణిస్తాడు (యెహెజ్కేలు 10:1-22). వారి విధి: పరిశుద్ధమైనదానిని కాపాడటం, దేవుని మహిమను మోయడం."},
+    {type:"verse", en:"These were the living creatures that I saw underneath the God of Israel by the Chebar canal, and I knew that they were cherubim.",
+      te:"కెబారు నదీతీరమున ఇశ్రాయేలు దేవుని క్రింద నేను చూచిన జీవులు ఇవే; అవి కెరూబులని నేను తెలిసికొంటిని.",
+      ref:{en:"Ezekiel 10:20", te:"యెహెజ్కేలు 10:20"}},
+    {type:"h", en:"Seraphim — burning ones who cry \"Holy\"", te:"సెరాఫులు — \"పరిశుద్ధుడు\" అని ఆర్భటించు జ్వాలామయులు"},
+    {type:"p", en:"Seraphim appear only in Isaiah 6, standing above the Lord's throne, each with six wings — two covering the face, two the feet, and two for flying. Their unceasing duty is worship. One seraph took a burning coal from the altar and touched Isaiah's lips to cleanse him for the call God was giving him (Isaiah 6:6-7).",
+      te:"సెరాఫులు యెషయా 6వ అధ్యాయంలో మాత్రమే కనిపిస్తారు, ప్రభువు సింహాసనం పైన నిలబడి, ఒక్కొక్కరికి ఆరు రెక్కలు — రెండు ముఖాన్ని కప్పుకొనుటకు, రెండు కాళ్లను కప్పుకొనుటకు, రెండు ఎగురుటకు. వారి నిరంతర విధి ఆరాధనే. ఒక సెరాఫు బలిపీఠం మీది నిప్పును తీసుకొని యెషయా పెదవులను ముట్టించి, దేవుడు ఇచ్చే పిలుపు కొరకు అతనిని పవిత్రం చేశాడు (యెషయా 6:6-7)."},
+    {type:"verse", en:"Above him stood the seraphim... And one called to another and said: \"Holy, holy, holy is the LORD of hosts; the whole earth is full of his glory!\"",
+      te:"సెరాఫులు ఆయనకు పైగా నిలుచుండిరి... ఒకడు ఒకనికి, \"సైన్యములకధిపతియగు యెహోవా పరిశుద్ధుడు, పరిశుద్ధుడు, పరిశుద్ధుడు; ఆయన మహిమతో సర్వభూమి నిండియున్నది\" అని ప్రకటించుచుండిరి.",
+      ref:{en:"Isaiah 6:2-3", te:"యెషయా 6:2-3"}},
+    {type:"p", en:"Together, angels, cherubim, and seraphim teach us something about God Himself: He is worthy of ceaseless worship, and His holiness must be approached with reverence, not familiarity.",
+      te:"దూతలు, కెరూబులు, సెరాఫులు కలిసి దేవుని గురించి మనకు ఒక సత్యాన్ని బోధిస్తారు: ఆయన నిరంతర ఆరాధనకు యోగ్యుడు, ఆయన పరిశుద్ధతను చనువుతో కాక భయభక్తులతో సమీపించాలి."}
+  ],
+  story_en:"Missionaries in remote and dangerous regions have long told of nights when armed men surrounded a home but left without entering — later admitting to local authorities that they saw \"many guards\" standing watch around a house where, in fact, only one or two people were sleeping. Whether such accounts describe angels directly or not, they echo 2 Kings 6:17, where Elisha's servant's eyes were opened to see the mountain \"full of horses and chariots of fire\" — a reminder that unseen does not mean unreal.",
+  story_te:"దూరమైన, ప్రమాదకరమైన ప్రాంతాలలో మిషనరీలు చాలాకాలంగా చెప్పే కథలు ఉన్నాయి — ఆయుధాలు కలిగిన మనుషులు ఒక ఇంటిని చుట్టుముట్టి, లోపలికి రాకుండానే వెళ్లిపోయిన రాత్రుల గురించి, తరువాత స్థానిక అధికారులతో ఆ ఇంటి చుట్టూ \"చాలామంది కావలివారు\" కాపలా కాస్తున్నట్టు చూశామని ఒప్పుకున్నారు — నిజానికి ఆ ఇంట్లో ఒకరో ఇద్దరో మాత్రమే నిద్రిస్తున్నారు. ఇలాంటి కథలు నేరుగా దూతలను వర్ణిస్తాయో లేదో గాని, అవి 2 రాజులు 6:17ని ప్రతిధ్వనిస్తాయి, అక్కడ ఎలీషా సేవకుని కన్నులు తెరవబడి పర్వతం \"అగ్ని గుఱ్ఱములతో రథములతో\" నిండి ఉండటం చూశాడు — కనిపించనిది నిజం కాదని కాదని గుర్తుచేస్తుంది.",
+  story_note_en:"(An illustrative account commonly shared in mission contexts, not a specific verified incident.)",
+  story_note_te:"(మిషనరీ సందర్భాలలో సాధారణంగా పంచుకునే ఉదాహరణ కథనం, ఒక నిర్దిష్ట ధృవీకరించిన సంఘటన కాదు.)"
+},
+
+{ id:"worship", order:4, status:"ready",
+  title_en:"Worship", title_te:"ఆరాధన",
+  subtitle_en:"How to worship God according to Him",
+  subtitle_te:"ఆయన ప్రకారం దేవుని ఎలా ఆరాధించాలి",
+  refs:[{en:"John 4:23-24", te:"యోహాను 4:23-24"},{en:"Romans 12:1", te:"రోమీయులకు 12:1"},{en:"Psalm 95:6", te:"కీర్తనలు 95:6"},{en:"Hebrews 12:28-29", te:"హెబ్రీయులకు 12:28-29"}],
+  body:[
+    {type:"h", en:"What worship truly is", te:"ఆరాధన నిజంగా ఏమిటి"},
+    {type:"p", en:"Worship is not a style of music or a slot in a service — it is the posture of a life that treats God as supremely worthy. Jesus told the Samaritan woman that true worshipers would worship \"in spirit and in truth\" (John 4:23-24) — worship real in the heart, and accurate about who God actually is, not shaped by our own preferences.",
+      te:"ఆరాధన అనేది ఒక సంగీత శైలి కాదు, ఆరాధన సమయంలో ఒక భాగం కాదు — అది దేవుని అత్యున్నత విలువైనవానిగా చూసే జీవన విధానం. సమరయ స్త్రీతో యేసు, నిజమైన ఆరాధికులు \"ఆత్మతోను సత్యముతోను\" ఆరాధించెదరు అని చెప్పాడు (యోహాను 4:23-24) — హృదయంలో నిజమైన, దేవుడు నిజంగా ఎవరో సరిగ్గా తెలిసిన ఆరాధన, మన స్వంత అభిరుచుల చేత రూపొందించబడనిది."},
+    {type:"verse", en:"But the hour is coming, and is now here, when the true worshipers will worship the Father in spirit and truth, for the Father is seeking such people to worship him. God is spirit, and those who worship him must worship in spirit and truth.",
+      te:"అయితే సత్యారాధకులు ఆత్మతోను సత్యముతోను తండ్రిని ఆరాధించు కాలము వచ్చుచున్నది, అది ఇప్పుడే వచ్చియున్నది. తండ్రి తన్ను ఆరాధించువారిని అట్టివారినే కోరుచున్నాడు. దేవుడు ఆత్మ, ఆయనను ఆరాధించువారు ఆత్మతోను సత్యముతోను ఆరాధింపవలెను.",
+      ref:{en:"John 4:23-24", te:"యోహాను 4:23-24"}},
+    {type:"h", en:"How God says to worship Him", te:"దేవుడు తన్ను ఎలా ఆరాధించాలని చెప్తున్నాడు"},
+    {type:"p", en:"Scripture gives the \"how\": with reverence and awe, for our God is a consuming fire (Hebrews 12:28-29); with the whole body, bowing and kneeling (Psalm 95:6); with our whole lives offered as a living sacrifice (Romans 12:1); in spirit-filled song and thankful hearts (Colossians 3:16); never through idols or self-made images (Exodus 20:4-5), but always through Jesus Christ, our only mediator (1 Timothy 2:5).",
+      te:"లేఖనం \"ఎలా\" అనే దానికి జవాబిస్తుంది: భయభక్తులతో, ఎందుకంటే మన దేవుడు దహించు అగ్ని (హెబ్రీయులకు 12:28-29); శరీరంతో, వంగి మోకరిల్లి (కీర్తనలు 95:6); మన జీవితమంతటిని జీవముగల బలిగా అర్పించి (రోమీయులకు 12:1); ఆత్మతో నిండిన కీర్తనలతో, కృతజ్ఞతగల హృదయాలతో (కొలొస్సయులకు 3:16); ఎన్నడూ విగ్రహాల ద్వారా కాదు (నిర్గమకాండము 20:4-5), కానీ ఎల్లప్పుడూ మన ఏకైక మధ్యవర్తి అయిన యేసుక్రీస్తు ద్వారా (1 తిమోతికి 2:5)."},
+    {type:"verse", en:"I appeal to you therefore, brothers, by the mercies of God, to present your bodies as a living sacrifice, holy and acceptable to God, which is your spiritual worship.",
+      te:"కాబట్టి సహోదరులారా, దేవుని వాత్సల్యమునుబట్టి మీరు మీ శరీరములను సజీవమైన, పరిశుద్ధమైన, దేవునికి అనుకూలమైన బలిగా అర్పించుకొనవలెనని మిమ్మును బతిమాలుకొనుచున్నాను; ఇట్టి సేవ మీకు యుక్తమైనది.",
+      ref:{en:"Romans 12:1", te:"రోమీయులకు 12:1"}},
+    {type:"p", en:"Worship, then, is not confined to a Sunday service — it is Monday's honesty at work, patience with a difficult family member, and daily obedience, all offered back to God simply because He is worthy.",
+      te:"కాబట్టి ఆరాధన ఆదివారం సేవకు మాత్రమే పరిమితం కాదు — అది సోమవారం పనిలో నిజాయితీ, కష్టమైన కుటుంబ సభ్యునితో సహనం, ప్రతిదిన విధేయత — ఇవన్నీ దేవుడు యోగ్యుడు కాబట్టి తిరిగి ఆయనకు అర్పించబడేవి."}
+  ],
+  story_en:"A bedridden elderly woman, unable to attend church for the last years of her life, was found by a visiting pastor quietly singing hymns to herself every morning, hands lifted as far as her weak arms could reach. She had nothing to offer — no service to lead, no gift to give — yet her small room became, in that pastor's words, \"the most worshipful place I visited all week.\" Worship was never about ability; it was about the heart bowed toward God.",
+  story_te:"జీవితపు చివరి సంవత్సరాల్లో చర్చికి వెళ్లలేని ఒక వృద్ధురాలు, ప్రతి ఉదయం తన బలహీనమైన చేతులు ఎంత ఎత్తు వెళ్తే అంత ఎత్తు లేపి, నిశ్శబ్దంగా కీర్తనలు పాడుకుంటూ కనిపించింది — ఆమెను చూడవచ్చిన పాస్టరుకు. ఆమె వద్ద అర్పించడానికి ఏమీ లేదు — నడిపించే సేవ లేదు, ఇచ్చే కానుక లేదు — అయినా ఆ చిన్న గది, ఆ పాస్టరు మాటల్లో, \"ఆ వారమంతా నేను సందర్శించిన అత్యంత ఆరాధనాపూర్వకమైన స్థలం\" అయ్యింది. ఆరాధన ఎప్పుడూ సామర్థ్యం గురించి కాదు; అది దేవుని వైపు వంగిన హృదయం గురించి."
+},
+
+{ id:"worship-vs-praise", order:5, status:"ready",
+  title_en:"Difference Between Worship and Praise", title_te:"ఆరాధన మరియు స్తుతికి మధ్య తేడా",
+  subtitle_en:"Two related but distinct responses to God",
+  subtitle_te:"దేవునికి సంబంధించిన రెండు వేర్వేరు, కానీ సంబంధమున్న స్పందనలు",
+  refs:[{en:"Psalm 150:1-6", te:"కీర్తనలు 150:1-6"},{en:"Job 1:20-21", te:"యోబు 1:20-21"},{en:"John 12:3", te:"యోహాను 12:3"}],
+  body:[
+    {type:"h", en:"Praise: declaring who He is", te:"స్తుతి: ఆయన ఎవరో ప్రకటించడం"},
+    {type:"p", en:"Praise (Hebrew *halal*, *yadah*, *tehillah*) is the vocal, often exuberant declaration of who God is and what He has done — celebrating His works and character out loud, often together, with instruments, shouting, and clapping (Psalm 150). Praise often looks outward and up — declaring God's greatness to others and to Him.",
+      te:"స్తుతి (హీబ్రూలో *హలల్*, *యాదా*, *తెహిల్లా*) అనేది దేవుడు ఎవరో, ఆయన ఏమి చేశాడో స్వరంతో, తరచుగా ఉత్సాహంగా ప్రకటించడం — ఆయన కార్యాలను, స్వభావాన్ని బిగ్గరగా, తరచుగా కలిసి, వాయిద్యాలతో, కేకలతో, చప్పట్లతో ఆనందించడం (కీర్తనలు 150). స్తుతి తరచుగా బయటకు, పైకి చూస్తుంది — దేవుని గొప్పతనాన్ని ఇతరులకు, ఆయనకు ప్రకటించడం."},
+    {type:"verse", en:"Let everything that has breath praise the LORD! Praise the LORD!",
+      te:"ఊపిరిగల ప్రతిదియు యెహోవాను స్తుతించునుగాక. యెహోవాను స్తుతించుడి.",
+      ref:{en:"Psalm 150:6", te:"కీర్తనలు 150:6"}},
+    {type:"h", en:"Worship: bowing before who He is", te:"ఆరాధన: ఆయన ఎదుట వంగడం"},
+    {type:"p", en:"Worship (Hebrew *shachah*) is deeper and quieter — the humble bowing of the whole self before God simply because of who He is, regardless of what He has or hasn't done for us in that moment. It's what Job did when he lost everything and still \"fell on the ground and worshiped\" (Job 1:20-21), and what Mary did pouring out a year's wages in perfume at Jesus' feet (John 12:3) — not because it was useful, but because He was worthy.",
+      te:"ఆరాధన (హీబ్రూలో *షాఖా*) లోతైనది, నిశ్శబ్దమైనది — ఆ క్షణంలో ఆయన మనకు ఏమి చేశాడో లేదో అనే దానితో సంబంధం లేకుండా, ఆయన ఎవరో అనే కారణంగా మొత్తం ఆత్మను దేవుని ఎదుట వినయంగా వంచడం. యోబు అంతా కోల్పోయినప్పుడు \"నేలమీద పడి ఆరాధించెను\" (యోబు 1:20-21), మరియు మరియ యేసు పాదాల వద్ద ఒక సంవత్సరం జీతమంత విలువైన అత్తరు పోసినప్పుడు (యోహాను 12:3) చేసింది ఇదే — అది ఉపయోగకరం కాబట్టి కాదు, ఆయన యోగ్యుడు కాబట్టి."},
+    {type:"verse", en:"Then Job arose and tore his robe and shaved his head and fell on the ground and worshiped. And he said, \"Naked I came from my mother's womb, and naked shall I return... the LORD gave, and the LORD has taken away; blessed be the name of the LORD.\"",
+      te:"అప్పుడు యోబు లేచి తన పైవస్త్రమును చింపుకొని తలవెండ్రుకలు గొరిగించుకొని నేలను సాష్టాంగపడి, \"నేను నా తల్లిగర్భములోనుండి దిగంబరిగా వచ్చితిని, దిగంబరిగానే అక్కడికి తిరిగి వెళ్లెదను... యెహోవా ఇచ్చెను, యెహోవా తీసికొనిపోయెను; యెహోవా నామమునకు స్తుతి కలుగునుగాక\" అనెను.",
+      ref:{en:"Job 1:20-21", te:"యోబు 1:20-21"}},
+    {type:"h", en:"Holding them together", te:"రెండింటిని కలిపి చూడటం"},
+    {type:"p", en:"A simple way to hold them together: **praise is what we say about God; worship is what we become before Him.** Praise can happen in a crowd with lifted voices; worship can happen alone, in silence, with a broken heart still bowed low. Scripture calls us to both.",
+      te:"ఈ రెండింటిని కలిపి చూసే సరళమైన మార్గం: **స్తుతి అనేది దేవుని గురించి మనం చెప్పేది; ఆరాధన అనేది ఆయన ఎదుట మనం అయ్యేది.** స్తుతి జనసమూహంలో ఎత్తిన స్వరాలతో జరగవచ్చు; ఆరాధన ఒంటరిగా, నిశ్శబ్దంలో, విరిగిన హృదయంతో కూడా వంగి ఉండవచ్చు. లేఖనం మనలను రెండింటికీ పిలుస్తుంది."}
+  ],
+  story_en:"After losing his job, a man stood in his church one Sunday, raised his hands, and sang louder than anyone in the room — that was praise. That same night, alone in his kitchen with the bills spread on the table, he knelt on the floor and simply said, \"You are still God, and that is enough\" — that was worship. Both were real; both were needed.",
+  story_te:"ఉద్యోగం కోల్పోయిన తరువాత, ఒక వ్యక్తి ఆదివారం తన చర్చిలో నిలబడి, చేతులు ఎత్తి, గదిలో ఎవరికంటే బిగ్గరగా పాడాడు — అది స్తుతి. అదే రాత్రి, వంటగదిలో ఒంటరిగా, టేబుల్ మీద బిల్లులు పరచుకుని, అతను నేలమీద మోకరించి, \"నీవు ఇప్పటికీ దేవుడివే, అది చాలు\" అని మాత్రమే చెప్పాడు — అది ఆరాధన. రెండూ నిజమైనవే; రెండూ అవసరమైనవే."
+},
+
+{ id:"lucifer", order:6, status:"ready",
+  title_en:"Lucifer", title_te:"లూసిఫర్",
+  subtitle_en:"His position, duties, powers, and his fall",
+  subtitle_te:"అతని స్థానం, విధులు, శక్తులు మరియు అతని పతనం",
+  refs:[{en:"Ezekiel 28:12-17", te:"యెహెజ్కేలు 28:12-17"},{en:"Isaiah 14:12-15", te:"యెషయా 14:12-15"},{en:"1 Peter 5:8", te:"1 పేతురు 5:8"}],
+  body:[
+    {type:"h", en:"His position and powers before the fall", te:"పతనానికి ముందు అతని స్థానం మరియు శక్తులు"},
+    {type:"p", en:"Before his fall, the being called \"the anointed guardian cherub\" in Ezekiel 28:14 held the highest created position among the angels — described as \"the seal of perfection, full of wisdom and perfect in beauty,\" adorned with precious stones, present \"on the holy mountain of God.\" Many understand him to have led heaven's worship before pride entered him.",
+      te:"అతని పతనానికి ముందు, యెహెజ్కేలు 28:14లో \"అభిషేకము పొందిన కావలికాపు కెరూబు\" అని పిలవబడిన జీవి, దూతలలో అత్యున్నత సృష్టించబడిన స్థానాన్ని కలిగియుండెను — \"సంపూర్ణతకు ముద్రవలె, జ్ఞానముతో నిండి, సౌందర్యములో పరిపూర్ణుడు\" అని వర్ణించబడి, విలువైన రత్నాలతో అలంకరింపబడి, \"దేవుని పరిశుద్ధ పర్వతము మీద\" ఉండెను. గర్వము అతనిలో ప్రవేశించకముందు అతడు పరలోక ఆరాధనను నడిపించెనని చాలామంది అర్థం చేసుకుంటారు."},
+    {type:"verse", en:"You were the signet of perfection, full of wisdom and perfect in beauty. You were in Eden, the garden of God; every precious stone was your covering... You were blameless in your ways from the day you were created, till unrighteousness was found in you.",
+      te:"నీవు సంపూర్ణతకు ముద్రవలె ఉంటివి, జ్ఞానముతో నిండినవాడవు, సౌందర్యములో పరిపూర్ణుడవు. నీవు దేవుని తోటయైన ఏదెనులో ఉంటివి; ప్రతి విలువైన రత్నము నీ వస్త్రమైయుండెను... నీవు సృష్టింపబడిన దినము మొదలుకొని నీయందు దోషము కనబడువరకు నీ మార్గములలో నిర్దోషివై యుంటివి.",
+      ref:{en:"Ezekiel 28:12-15", te:"యెహెజ్కేలు 28:12-15"}},
+    {type:"h", en:"His fall", te:"అతని పతనం"},
+    {type:"p", en:"Pride was his undoing. \"Your heart was proud because of your beauty; you corrupted your wisdom for the sake of your splendor\" (Ezekiel 28:17). Isaiah records his ambition in five \"I will\" statements — he desired to ascend above God's throne and \"make himself like the Most High\" (Isaiah 14:13-14). Created glory was not enough for him; he wanted to be worshiped rather than to worship.",
+      te:"గర్వమే అతని పతనానికి కారణం. \"నీ సౌందర్యమునుబట్టి నీ హృదయము గర్వించెను, నీ తేజస్సునుబట్టి నీ జ్ఞానమును చెరిపివేసుకొంటివి\" (యెహెజ్కేలు 28:17). యెషయా అతని ఆకాంక్షను ఐదు \"నేను చేయుదును\" వాక్యాలలో నమోదు చేస్తాడు — అతడు దేవుని సింహాసనము కంటే పైకి ఎక్కి \"మహోన్నతునితో సమానమవుదును\" అని కోరుకున్నాడు (యెషయా 14:13-14). సృష్టించబడిన మహిమ అతనికి చాలలేదు; ఆరాధించడం కంటే ఆరాధింపబడాలని అతడు కోరుకున్నాడు."},
+    {type:"verse", en:"How you are fallen from heaven, O Day Star, son of Dawn!... You said in your heart, 'I will ascend to heaven; above the stars of God I will set my throne on high... I will make myself like the Most High.' But you are brought down to Sheol, to the far reaches of the pit.",
+      te:"తేజోనక్షత్రమా, ఉదయపుత్రుడా, నీవు ఆకాశమునుండి యెట్లు పడితివి!... నీవు నీ హృదయములో, 'నేను ఆకాశమునకు ఎక్కిపోయెదను, దేవుని నక్షత్రములకు పైగా నా సింహాసనమును హెచ్చించుకొందును... మహోన్నతునితో సమానుడనగుదును' అనుకొంటివి. అయితే నీవు పాతాళమునకు, గుంటలో లోతట్టు స్థలములకు పడద్రోయబడితివి.",
+      ref:{en:"Isaiah 14:12-15", te:"యెషయా 14:12-15"}},
+    {type:"p", en:"God cast him down. He is now called Satan (\"adversary\") and the devil (\"accuser\") — a defeated enemy who still prowls \"like a roaring lion, seeking someone to devour\" (1 Peter 5:8), but whose final judgment is already certain (Revelation 20:10).",
+      te:"దేవుడు అతనిని పడద్రోసాడు. అతడు ఇప్పుడు సాతాను (\"విరోధి\") మరియు అపవాది (\"నిందించువాడు\") అని పిలవబడతాడు — ఓడిపోయిన శత్రువు అయినప్పటికీ \"గర్జించు సింహమువలె ఎవరిని మింగుదునా అని వెదకుచు\" ఇప్పటికీ తిరుగుతున్నాడు (1 పేతురు 5:8), అయితే అతని తుది తీర్పు ఇప్పటికే నిశ్చయమైయున్నది (ప్రకటన గ్రంథం 20:10)."}
+  ],
+  story_en:"A gifted young worship leader once drew such large crowds that people began coming to hear him more than to meet God. He later admitted that for a season he had quietly started to enjoy the applause more than the altar — until a mentor warned him plainly: \"The moment you love being seen more than you love Him who sees you, you've started down Lucifer's road.\" He stepped back from the stage for a season to guard his heart. The gift itself was never the danger — pride wearing the gift was.",
+  story_te:"ప్రతిభావంతుడైన ఒక యువ ఆరాధన నాయకుడు ఒకసారి చాలా పెద్ద జనసమూహాలను ఆకర్షించాడు, దేవుని కలవడం కంటే అతనిని వినడానికి ప్రజలు రావడం మొదలుపెట్టారు. కొంతకాలం పాటు, బలిపీఠం కంటే చప్పట్లను ఎక్కువగా ఆనందించడం మొదలుపెట్టానని అతను తరువాత ఒప్పుకున్నాడు — ఒక మార్గదర్శకుడు స్పష్టంగా అతనిని హెచ్చరించేవరకు: \"నిన్ను చూస్తున్న ఆయనను ప్రేమించడం కంటే కనిపించడాన్ని ఎక్కువగా ప్రేమించిన క్షణం, నీవు లూసిఫర్ మార్గంలో నడవడం మొదలుపెట్టావు.\" తన హృదయాన్ని కాపాడుకోవడానికి అతడు కొంతకాలం వేదిక నుండి వెనక్కి తగ్గాడు. వరం ఎప్పుడూ ప్రమాదం కాదు — ఆ వరాన్ని ధరించిన గర్వమే ప్రమాదం."
+},
+
+{ id:"fall-of-angels", order:7, status:"ready",
+  title_en:"Fall of Angels", title_te:"దూతల పతనం",
+  subtitle_en:"Why and how they followed Lucifer",
+  subtitle_te:"వారు లూసిఫర్‌ను ఎందుకు, ఎలా అనుసరించారు",
+  refs:[{en:"Revelation 12:4,7-9", te:"ప్రకటన గ్రంథం 12:4,7-9"},{en:"Jude 1:6", te:"యూదా 1:6"},{en:"2 Peter 2:4", te:"2 పేతురు 2:4"},{en:"Ephesians 6:12", te:"ఎఫెసీయులకు 6:12"}],
+  body:[
+    {type:"h", en:"A rebellion of the will, not a trap", te:"చిక్కుకోవడం కాదు, చిత్తపూర్వక తిరుగుబాటు"},
+    {type:"p", en:"Scripture pictures a great number of the angels joining Lucifer's rebellion (Revelation 12:4). They were not deceived by force — angels, like Adam and Eve later, were given real will and chose their allegiance. Jude describes them as angels \"who did not stay within their own position of authority, but left their proper dwelling,\" now kept in chains of gloomy darkness until judgment (Jude 1:6; 2 Peter 2:4).",
+      te:"లేఖనం లూసిఫర్ తిరుగుబాటులో పెద్ద సంఖ్యలో దూతలు చేరినట్టు చిత్రిస్తుంది (ప్రకటన గ్రంథం 12:4). వారు బలవంతంగా మోసగించబడలేదు — తరువాత ఆదాము హవ్వల వలె, దూతలకు నిజమైన చిత్తశక్తి ఇవ్వబడింది, వారు తమ విధేయతను ఎంచుకున్నారు. \"తమ అధికార పదవిలో నిలువకుండా తమ స్వస్థలమును విడిచిపెట్టిన\" దూతలుగా యూదా వారిని వర్ణిస్తాడు, ఇప్పుడు తీర్పు వరకు గాఢాంధకారపు సంకెళ్లలో ఉంచబడ్డారు (యూదా 1:6; 2 పేతురు 2:4)."},
+    {type:"verse", en:"And the angels who did not stay within their own position of authority, but left their proper dwelling, he has kept in eternal chains under gloomy darkness until the judgment of the great day.",
+      te:"మరియు తమ అధికార పదవిలో నిలువకుండ, తమ స్వస్థలమును విడిచిపెట్టిన దూతలను, మహాదినమున తీర్పు తీర్చుటకు ఆయన శాశ్వతమైన సంకెళ్లతో కటిక చీకటిలో భద్రము చేసియున్నాడు.",
+      ref:{en:"Jude 1:6", te:"యూదా 1:6"}},
+    {type:"h", en:"Why they followed him", te:"వారు అతనిని ఎందుకు అనుసరించారు"},
+    {type:"p", en:"Why did they follow him? The same reason temptation always works — pride offers the illusion of being enough on your own, of not needing to submit to anyone, even God. Lucifer did not force loyalty; he offered a vision of self-exaltation, and a portion of heaven's own host found that vision more attractive than continued worship of their Creator.",
+      te:"వారు అతనిని ఎందుకు అనుసరించారు? శోధన ఎల్లప్పుడూ పనిచేసే అదే కారణం — గర్వం, తనంతట తానే సరిపోతానన్న భ్రమను, ఎవరికీ, దేవునికి కూడా లోబడనవసరం లేదన్న భ్రమను ఇస్తుంది. లూసిఫర్ విధేయతను బలవంతంగా తీసుకోలేదు; అతడు స్వీయ-గొప్పతనం అనే దర్శనాన్ని అందించాడు, పరలోక సైన్యంలో ఒక భాగం తమ సృష్టికర్తను నిరంతరం ఆరాధించడం కంటే ఆ దర్శనమే ఆకర్షణీయమైనదిగా భావించింది."},
+    {type:"verse", en:"And war arose in heaven, Michael and his angels fighting against the dragon. And the dragon and his angels fought back, but he was defeated, and there was no longer any place for them in heaven.",
+      te:"అప్పుడు పరలోకమందు యుద్ధము పుట్టెను, మిఖాయేలును అతని దూతలును ఆ ఘటసర్పముతో యుద్ధము చేసిరి; ఆ ఘటసర్పమును దాని దూతలును యుద్ధము చేసిరి గాని జయింపలేకపోయిరి, పరలోకమందు వారికికను స్థలము దొరకకపోయెను.",
+      ref:{en:"Revelation 12:7-8", te:"ప్రకటన గ్రంథం 12:7-8"}},
+    {type:"p", en:"These fallen angels are now demons, operating under Satan's authority, at war with God's purposes (Ephesians 6:12) — but already defeated at the cross (Colossians 2:15) and awaiting final judgment.",
+      te:"ఈ పడిపోయిన దూతలు ఇప్పుడు దయ్యములు, సాతాను అధికారము క్రింద పనిచేయుచు, దేవుని సంకల్పాలతో యుద్ధము చేయుచున్నారు (ఎఫెసీయులకు 6:12) — అయితే సిలువ వద్దనే వారు ఇప్పటికే ఓడించబడ్డారు (కొలొస్సయులకు 2:15), తుది తీర్పు కొరకు వేచియున్నారు."}
+  ],
+  story_en:"In workplaces and even churches, people sometimes describe how an entire group slowly drifted toward gossip, pride, or dishonesty — not because any one person was forced, but because it felt safer to go along with the group's direction than to stand apart from it. The fall of the angels shows this pattern at its most extreme: rebellion rarely announces itself as rebellion; it usually arrives dressed as loyalty to the group.",
+  story_te:"కార్యాలయాలలో, కొన్నిసార్లు చర్చిలలో కూడా, ఒక మొత్తం సమూహం మెల్లగా అపవాదు, గర్వం, లేదా అబద్ధం వైపు జారిపోయినట్టు ప్రజలు చెబుతుంటారు — ఎవరో ఒకరిని బలవంతం చేయడం వల్ల కాదు, కానీ సమూహం నుండి వేరుగా నిలబడటం కంటే దానితో కలిసి వెళ్లడమే సురక్షితంగా అనిపించడం వల్ల. దూతల పతనం ఈ మాదిరిని అత్యంత తీవ్రస్థాయిలో చూపిస్తుంది: తిరుగుబాటు అరుదుగా తిరుగుబాటుగా తనను తాను ప్రకటించుకుంటుంది; ఇది సాధారణంగా సమూహానికి విధేయతగా ముసుగు వేసుకుని వస్తుంది."
+},
+
+{ id:"adam-eve", order:8, status:"ready",
+  title_en:"Adam and Eve, and Their Fall", title_te:"ఆదాము, హవ్వ మరియు వారి పతనం",
+  subtitle_en:"The garden, the temptation, and the consequences",
+  subtitle_te:"తోట, శోధన మరియు దాని ఫలితాలు",
+  refs:[{en:"Genesis 2:15-25", te:"ఆదికాండము 2:15-25"},{en:"Genesis 3:1-24", te:"ఆదికాండము 3:1-24"}],
+  body:[
+    {type:"h", en:"Made for the garden", te:"తోట కోసం సృష్టించబడినవారు"},
+    {type:"p", en:"God placed Adam in Eden \"to work it and keep it\" (Genesis 2:15), gave one restriction — not to eat from the tree of the knowledge of good and evil (Genesis 2:16-17) — and made Eve as his \"helper fit for him\" (Genesis 2:18), the two becoming \"one flesh\" (Genesis 2:24). They lived naked and unashamed, in unbroken fellowship with God.",
+      te:"దేవుడు ఆదామును ఏదెనులో \"దాని సేద్యపరచుటకును దాని కాపాడుటకును\" ఉంచాడు (ఆదికాండము 2:15), ఒక్క నిషేధం ఇచ్చాడు — మంచిచెడ్డల తెలివినిచ్చు వృక్షఫలం తినకూడదని (ఆదికాండము 2:16-17) — హవ్వను అతనికి \"తగిన సహకారిణి\"గా చేశాడు (ఆదికాండము 2:18), ఇద్దరూ \"ఏక శరీరము\" అయ్యారు (ఆదికాండము 2:24). వారు దేవునితో నిరంతర సహవాసంలో, నగ్నంగా ఉన్నా సిగ్గుపడకుండా జీవించారు."},
+    {type:"verse", en:"And the man and his wife were both naked and were not ashamed.",
+      te:"ఆదామును అతని భార్యయు ఇద్దరు దిగంబరులైయుండియు సిగ్గుపడలేదు.",
+      ref:{en:"Genesis 2:25", te:"ఆదికాండము 2:25"}},
+    {type:"h", en:"The fall", te:"పతనం"},
+    {type:"p", en:"The serpent (Satan working through it) questioned God's word (\"Did God actually say...?\"), denied God's warning (\"You will not surely die\"), and slandered God's motive, suggesting God was withholding good from them (Genesis 3:1-5). Eve saw the fruit was good for food, a delight to the eyes, and desirable for wisdom — and ate; she gave some to Adam, who ate with her (Genesis 3:6). Immediately their eyes were opened, shame entered, and they hid from God.",
+      te:"సర్పము (దాని ద్వారా పనిచేస్తున్న సాతాను) దేవుని మాటను ప్రశ్నించింది (\"దేవుడు నిజముగా చెప్పెనా...?\"), దేవుని హెచ్చరికను తిరస్కరించింది (\"మీరు నిశ్చయముగా చావరు\"), దేవుని ఉద్దేశాన్ని దూషించి, దేవుడు వారికి మేలును బిగపట్టుచున్నాడని సూచించింది (ఆదికాండము 3:1-5). ఆ వృక్షఫలం తినుటకు మంచిదిగాను, కన్నులకు అందముగాను, జ్ఞానమిచ్చుటకు కోరదగినదిగాను హవ్వ చూసింది — తినెను; ఆదామునకు కూడా ఇచ్చెను, అతడును తినెను (ఆదికాండము 3:6). వెంటనే వారి కన్నులు తెరవబడెను, సిగ్గు ప్రవేశించెను, వారు దేవుని నుండి దాగుకొనిరి."},
+    {type:"verse", en:"So when the woman saw that the tree was good for food, and that it was a delight to the eyes, and that the tree was to be desired to make one wise, she took of its fruit and ate, and she also gave some to her husband who was with her, and he ate.",
+      te:"ఆ వృక్షము తినుటకు మంచిదియు, కన్నులకు అందమైనదియు, జ్ఞానము కలుగజేయుటకు కోరదగినదియునై యున్నదని స్త్రీ చూచి, ఆ ఫలములలో కొన్ని తీసికొని తినెను; తనతోకూడ ఉన్న తన పెనిమిటికిని ఇచ్చెను, అతడును తినెను.",
+      ref:{en:"Genesis 3:6", te:"ఆదికాండము 3:6"}},
+    {type:"h", en:"The consequences — and the first promise", te:"పర్యవసానాలు — మరియు మొదటి వాగ్దానం"},
+    {type:"p", en:"The consequences were immediate and far-reaching: pain in childbirth, toil and thorns in labor, broken harmony between man and woman, and physical death entering the human story (Genesis 3:16-19). Yet even in judgment, God gave the first promise of a Redeemer — the offspring of the woman who would crush the serpent's head (Genesis 3:15) — and clothed them Himself with animal skins, foreshadowing that sin would require a covering bought by a death not their own (Genesis 3:21).",
+      te:"పర్యవసానాలు తక్షణమే, దూరదృష్టితో వచ్చాయి: పిల్లలు కనుటలో వేదన, కష్టము మరియు ముళ్లతో కూడిన శ్రమ, పురుషునికి స్త్రీకి మధ్య విరిగిన సామరస్యం, మానవ చరిత్రలో శారీరక మరణం ప్రవేశించడం (ఆదికాండము 3:16-19). అయినప్పటికీ, తీర్పులో కూడా, దేవుడు విమోచకుని గురించి మొదటి వాగ్దానం ఇచ్చాడు — సర్పము తలను చితకగొట్టు స్త్రీ సంతానము (ఆదికాండము 3:15) — తానే వారికి జంతు చర్మములతో వస్త్రములు చేయించెను, పాపమునకు, తమదికాని మరణము ద్వారా కొనబడిన కప్పు అవసరమని ముందుగానే సూచిస్తూ (ఆదికాండము 3:21)."},
+    {type:"verse", en:"I will put enmity between you and the woman, and between your offspring and her offspring; he shall bruise your head, and you shall bruise his heel.",
+      te:"నీకును స్త్రీకిని నీ సంతానమునకును ఆమె సంతానమునకును పగపెట్టెదను; అది నిన్ను తలమీద కొట్టును, నీవు దానిని మడిమెమీద కొట్టుదువు.",
+      ref:{en:"Genesis 3:15", te:"ఆదికాండము 3:15"}}
+  ],
+  story_en:"A young man once ignored a small warning sign at the edge of a scenic cliff — \"just one step closer for a better photo,\" he told himself — and the loose ground gave way beneath him, costing him a broken leg and months of recovery. The warning had not been unclear; the danger simply looked distant and the desire in the moment looked bigger than the risk. That is exactly the shape of Eden's temptation: not an obviously evil choice, but a small compromise that looked reasonable, good, and desirable in the moment.",
+  story_te:"ఒక యువకుడు ఒకసారి సుందరమైన ఒక కొండ అంచున ఉన్న చిన్న హెచ్చరిక బోర్డును పట్టించుకోలేదు — \"మంచి ఫోటో కోసం ఇంకొక్క అడుగు మాత్రమే\" అని తనలో తాను అనుకున్నాడు — అతని కాళ్ల క్రింద నేల విరిగిపోయి, అతనికి విరిగిన కాలు, నెలల తరబడి కోలుకోవడం మిగిలింది. హెచ్చరిక అస్పష్టంగా లేదు; ప్రమాదం మాత్రం దూరంగా కనిపించింది, ఆ క్షణంలో కోరిక ప్రమాదం కంటే పెద్దదిగా కనిపించింది. ఏదెను తోటలోని శోధన ఆకారం సరిగ్గా ఇదే: స్పష్టంగా చెడు అనిపించే ఎంపిక కాదు, ఆ క్షణంలో సహేతుకంగా, మంచిదిగా, కోరదగినదిగా కనిపించిన ఒక చిన్న రాజీ."
+},
+
+{ id:"mankind", order:9, status:"ready",
+  title_en:"Mankind — From Adam to the Last Adam", title_te:"మానవజాతి — ఆదాము నుండి చివరి ఆదాము వరకు",
+  subtitle_en:"Two heads of humanity, and the inheritance each one gives",
+  subtitle_te:"మానవజాతికి ఇద్దరు తలలు, ప్రతి ఒక్కరు ఇచ్చే వారసత్వం",
+  refs:[{en:"Romans 5:12-19", te:"రోమీయులకు 5:12-19"},{en:"1 Corinthians 15:22,45,47", te:"1 కొరింథీయులకు 15:22,45,47"}],
+  body:[
+    {type:"h", en:"One man's fall, every man's inheritance", te:"ఒక మనిషి పతనం, ప్రతి మనిషి వారసత్వం"},
+    {type:"p", en:"\"Sin came into the world through one man, and death through sin, and so death spread to all men because all sinned\" (Romans 5:12). Every descendant of Adam inherits a fallen nature — not merely his bad example, but his condition. We are born \"in Adam,\" under sin's rule and death's sentence (1 Corinthians 15:22).",
+      te:"\"ఒక మనుష్యుని ద్వారా పాపమును పాపము ద్వారా మరణమును లోకములో ప్రవేశించెను, అందరును పాపము చేసినందున ఆ ప్రకారము మనుష్యులందరికిని మరణము సంక్రమించెను\" (రోమీయులకు 5:12). ఆదాము సంతతివారు ప్రతి ఒక్కరు పతనమైన స్వభావాన్ని వారసత్వంగా పొందుతారు — కేవలం అతని చెడ్డ మాదిరి కాదు, అతని స్థితిని. మనం \"ఆదామునందు\" పుట్టాము, పాప పరిపాలన క్రింద, మరణపు తీర్పు క్రింద (1 కొరింథీయులకు 15:22)."},
+    {type:"verse", en:"Therefore, just as sin came into the world through one man, and death through sin, and so death spread to all men because all sinned.",
+      te:"కాబట్టి ఒక మనుష్యుని ద్వారా పాపమును పాపముద్వారా మరణమును లోకములో ఏలాగు ప్రవేశించెనో, ఆలాగుననే అందరును పాపము చేసినందున మరణము అందరికిని సంక్రమించెను.",
+      ref:{en:"Romans 5:12", te:"రోమీయులకు 5:12"}},
+    {type:"h", en:"The last Adam", te:"చివరి ఆదాము"},
+    {type:"p", en:"But God did not leave humanity in Adam. Christ is called \"the last Adam\" (1 Corinthians 15:45) and \"the second man\" (1 Corinthians 15:47) — where Adam's disobedience in a garden brought condemnation, Christ's obedience, even to death on a tree, brings justification and life to all who are united to Him by faith (Romans 5:18-19).",
+      te:"కానీ దేవుడు మానవజాతిని ఆదామునందే విడిచిపెట్టలేదు. క్రీస్తు \"చివరి ఆదాము\" (1 కొరింథీయులకు 15:45), \"రెండవ మనుష్యుడు\" (1 కొరింథీయులకు 15:47) అని పిలవబడతాడు — ఆదాము ఒక తోటలో చేసిన అవిధేయత శిక్షావిధిని తెచ్చినట్టుగా, క్రీస్తు విధేయత, మ్రానుమీద మరణము వరకు కూడా, విశ్వాసము ద్వారా ఆయనతో ఐక్యమైన వారందరికి నీతిమంతత్వమును జీవమును తెచ్చును (రోమీయులకు 5:18-19)."},
+    {type:"verse", en:"For as in Adam all die, so also in Christ shall all be made alive.",
+      te:"ఆదామునందు అందరు ఏలాగు మృతిపొందుచున్నారో ఆలాగే క్రీస్తునందు అందరు బ్రదికింపబడుదురు.",
+      ref:{en:"1 Corinthians 15:22", te:"1 కొరింథీయులకు 15:22"}},
+    {type:"p", en:"The whole story of mankind, then, moves between two heads: everyone is either \"in Adam,\" inheriting sin and death, or \"in Christ,\" inheriting righteousness and life. There is no third category and no neutral ground — only a choice of which Adam you belong to.",
+      te:"కాబట్టి మానవజాతి మొత్తం కథ ఇద్దరు తలల మధ్య కదులుతుంది: ప్రతి ఒక్కరు \"ఆదామునందు\" ఉండి పాపమును మరణమును వారసత్వంగా పొందుతారు, లేదా \"క్రీస్తునందు\" ఉండి నీతిమంతత్వమును జీవమును వారసత్వంగా పొందుతారు. మూడవ వర్గం లేదు, తటస్థ స్థలం లేదు — నీవు ఏ ఆదాముకు చెందినవాడవో అనే ఎంపిక మాత్రమే ఉంది."}
+  ],
+  story_en:"A child born into a family deep in inherited debt never chose that debt — it simply came with being born into that family, through no fault of their own. But suppose someone outside the family paid the entire debt in full and legally adopted the child into a new family with a clean inheritance. The child's legal standing would completely change — not by anything the child did, but by whose family they now belonged to. That is the picture of Romans 5: born into Adam's debt, adopted into Christ's inheritance.",
+  story_te:"వారసత్వంగా వచ్చిన అప్పులో మునిగిన కుటుంబంలో పుట్టిన పిల్లవాడు ఆ అప్పును ఎన్నడూ ఎంచుకోలేదు — ఆ కుటుంబంలో పుట్టడం వల్ల అది తనతో పాటే వచ్చింది, తన తప్పు ఏమీ లేకుండా. కానీ ఆ కుటుంబం బయటి ఎవరైనా ఆ అప్పు మొత్తాన్ని పూర్తిగా చెల్లించి, ఆ పిల్లవాడిని శుభ్రమైన వారసత్వం గల కొత్త కుటుంబంలోకి చట్టబద్ధంగా దత్తత తీసుకుంటే? పిల్లవాడి చట్టపరమైన స్థితి పూర్తిగా మారిపోతుంది — పిల్లవాడు చేసిన దేనివల్లనూ కాదు, ఇప్పుడు వాడు ఏ కుటుంబానికి చెందినవాడో దానివల్ల. రోమీయులకు 5వ అధ్యాయం చిత్రం అదే: ఆదాము అప్పులో పుట్టడం, క్రీస్తు వారసత్వంలోకి దత్తత తీసుకోబడటం."
+},
+
+{ id:"god-and-mankind", order:10, status:"ready",
+  title_en:"God and His Dealing With Mankind", title_te:"దేవుడు మరియు మానవజాతితో ఆయన వ్యవహారం",
+  subtitle_en:"How God has related to mankind through history",
+  subtitle_te:"చరిత్ర అంతటా దేవుడు మానవజాతితో ఎలా వ్యవహరించాడు",
+  refs:[{en:"Genesis 3:9", te:"ఆదికాండము 3:9"},{en:"Hebrews 1:1-2", te:"హెబ్రీయులకు 1:1-2"},{en:"Jeremiah 31:31-34", te:"యిర్మీయా 31:31-34"}],
+  body:[
+    {type:"h", en:"A God who pursues", te:"వెంబడించే దేవుడు"},
+    {type:"p", en:"From the moment Adam and Eve hid in the garden, God came looking — \"Where are you?\" (Genesis 3:9) — not because He didn't know, but because relationship, not information, was what He wanted restored. This pattern repeats across the whole Bible: God dealing with mankind not from a distance, but by entering in.",
+      te:"ఆదాము హవ్వలు తోటలో దాగుకొన్న క్షణం నుండే, దేవుడు వెతకుచు వచ్చెను — \"నీవెక్కడ ఉన్నావు?\" (ఆదికాండము 3:9) — ఆయనకు తెలియకపోవడం వల్ల కాదు, సమాచారం కాదు, సంబంధమే ఆయన పునరుద్ధరించాలని కోరుకున్నది కాబట్టి. ఈ మాదిరి బైబిలు అంతటా పునరావృతమవుతుంది: దేవుడు మానవజాతితో దూరం నుండి కాక, లోపలికి ప్రవేశించడం ద్వారా వ్యవహరిస్తాడు."},
+    {type:"verse", en:"But the LORD God called to the man and said to him, \"Where are you?\"",
+      te:"అప్పుడు దేవుడైన యెహోవా ఆదామును పిలిచి, \"నీవెక్కడ ఉన్నావు?\" అని అతని నడిగెను.",
+      ref:{en:"Genesis 3:9", te:"ఆదికాండము 3:9"}},
+    {type:"p", en:"He dealt with Noah through covenant after judgment (Genesis 9:8-17), with Abraham through covenant promise (Genesis 12:1-3), with Israel through the Law at Sinai (Exodus 19-20) to reveal His holiness and their need, and with the nation through prophets who kept calling them back whenever they wandered (Hebrews 1:1).",
+      te:"తీర్పు తరువాత నోవహుతో నిబంధన ద్వారా (ఆదికాండము 9:8-17), అబ్రాహాముతో నిబంధన వాగ్దానము ద్వారా (ఆదికాండము 12:1-3), సీనాయి వద్ద ఇశ్రాయేలుతో ధర్మశాస్త్రము ద్వారా, తన పరిశుద్ధతను వారి అవసరతను వెల్లడించుటకు (నిర్గమకాండము 19-20), వారు దారితప్పినప్పుడల్లా తిరిగి పిలుస్తూ ప్రవక్తల ద్వారా జాతితో ఆయన వ్యవహరించాడు (హెబ్రీయులకు 1:1)."},
+    {type:"h", en:"Fully revealed in Christ", te:"క్రీస్తులో పూర్తిగా వెల్లడించబడినవాడు"},
+    {type:"verse", en:"Long ago, at many times and in many ways, God spoke to our fathers by the prophets, but in these last days he has spoken to us by his Son.",
+      te:"పూర్వకాలమందు అనేక భాగములుగాను అనేక విధములుగాను ప్రవక్తల ద్వారా మా పితరులతో మాటలాడిన దేవుడు, ఈ దినములలో కుమారుని ద్వారా మనతో మాటలాడెను.",
+      ref:{en:"Hebrews 1:1-2", te:"హెబ్రీయులకు 1:1-2"}},
+    {type:"p", en:"In Jesus, God did not send another message — He came Himself, \"God with us\" (Matthew 1:23), to deal with mankind's deepest need face to face, and to establish a new covenant written not on stone but on the heart.",
+      te:"యేసులో, దేవుడు మరొక సందేశాన్ని పంపలేదు — ఆయనే స్వయంగా వచ్చాడు, \"దేవుడు మనతో కూడ\" (మత్తయి 1:23), మానవజాతి లోతైన అవసరతను ముఖాముఖిగా చూడటానికి, రాతిమీద కాక హృదయము మీద వ్రాయబడిన కొత్త నిబంధనను స్థాపించడానికి."},
+    {type:"verse", en:"I will put my law within them, and I will write it on their hearts. And I will be their God, and they shall be my people.",
+      te:"వారి అంతరంగములో నా ధర్మశాస్త్రమునుంచి వారి హృదయపు పలకలమీద దానిని వ్రాసెదను; నేను వారి దేవుడనై యుందును, వారు నా ప్రజలైయుందురు.",
+      ref:{en:"Jeremiah 31:33", te:"యిర్మీయా 31:33"}}
+  ],
+  story_en:"A father whose toddler ran off in a crowded park did not stand still calling out and hoping the child would return on her own — he ran through the crowd, calling her name, searching every path until he found her. God's dealing with mankind across history looks exactly like this: not a distant call from a fixed point, but active, ongoing pursuit through covenant, through prophets, and finally in person, through His own Son.",
+  story_te:"రద్దీగా ఉన్న పార్కులో తన చిన్న కూతురు పరిగెత్తుకుపోయిన ఒక తండ్రి, నిలబడి కేకలు వేస్తూ, ఆమె తనంతట తానే వస్తుందని ఆశిస్తూ ఉండలేదు — అతను జనసమూహం గుండా పరిగెత్తాడు, ఆమె పేరు పిలుస్తూ, ఆమెను కనుగొనేవరకు ప్రతి దారిలో వెతికాడు. చరిత్ర అంతటా దేవుడు మానవజాతితో వ్యవహరించిన తీరు సరిగ్గా ఇలాగే కనిపిస్తుంది: స్థిరమైన స్థానం నుండి దూరపు పిలుపు కాదు, నిబంధనల ద్వారా, ప్రవక్తల ద్వారా, చివరకు తన సొంత కుమారుని ద్వారా ప్రత్యక్షంగా, చురుకైన, నిరంతర వెంబడింపు."
+},
+
+{ id:"sin", order:11, status:"ready",
+  title_en:"Sin", title_te:"పాపం",
+  subtitle_en:"God's dealing with humans against sin",
+  subtitle_te:"పాపానికి వ్యతిరేకంగా మానవులతో దేవుని వ్యవహారం",
+  refs:[{en:"Romans 3:23", te:"రోమీయులకు 3:23"},{en:"Romans 6:23", te:"రోమీయులకు 6:23"},{en:"2 Corinthians 5:21", te:"2 కొరింథీయులకు 5:21"},{en:"1 John 1:9", te:"1 యోహాను 1:9"}],
+  body:[
+    {type:"h", en:"What sin is, and what it costs", te:"పాపం అంటే ఏమిటి, దాని మూల్యం ఏమిటి"},
+    {type:"p", en:"Sin is missing the mark of God's holy standard, and more personally, it is rebellion — going our own way instead of God's (Isaiah 53:6). \"All have sinned and fall short of the glory of God\" (Romans 3:23), and the wage sin pays is death — not just physical death, but separation from the life and presence of God.",
+      te:"పాపం అనేది దేవుని పరిశుద్ధ ప్రమాణాన్ని తప్పిపోవడం, మరింత వ్యక్తిగతంగా చెప్పాలంటే అది తిరుగుబాటు — దేవుని మార్గానికి బదులుగా మన సొంత మార్గంలో వెళ్లడం (యెషయా 53:6). \"అందరును పాపముచేసి దేవుడు అనుగ్రహించు మహిమను పొందలేకపోవుచున్నారు\" (రోమీయులకు 3:23), పాపము ఇచ్చు జీతము మరణము — కేవలం శారీరక మరణమే కాదు, దేవుని జీవము నుండి, సన్నిధి నుండి వేరుచేయబడటం."},
+    {type:"verse", en:"For all have sinned and fall short of the glory of God.",
+      te:"అందరును పాపము చేసి దేవుడు అనుగ్రహించు మహిమను పొందలేకపోవుచున్నారు.",
+      ref:{en:"Romans 3:23", te:"రోమీయులకు 3:23"}},
+    {type:"h", en:"How God deals with sin", te:"దేవుడు పాపంతో ఎలా వ్యవహరిస్తాడు"},
+    {type:"p", en:"God does not deal with sin by lowering His standard or pretending it doesn't matter — His holiness cannot ignore it. Under the Old Covenant He provided a temporary covering through the blood of sacrificed animals, pointing forward to something greater (Leviticus 17:11; Hebrews 10:4). In the fullness of time, He dealt with sin fully and finally by sending His own Son as the once-for-all sacrifice.",
+      te:"దేవుడు తన ప్రమాణాన్ని తగ్గించడం ద్వారా లేదా అది ముఖ్యం కాదని నటించడం ద్వారా పాపంతో వ్యవహరించడు — ఆయన పరిశుద్ధత దానిని విస్మరించలేదు. పాతనిబంధన క్రింద, ఆయన బలియర్పించిన జంతువుల రక్తం ద్వారా తాత్కాలిక కప్పును అందించాడు, గొప్పదైన దానికి ముందుగా సూచిస్తూ (లేవీయకాండము 17:11; హెబ్రీయులకు 10:4). కాలము సంపూర్ణమైనప్పుడు, తన సొంత కుమారుని ఏకైక, శాశ్వతమైన బలిగా పంపడం ద్వారా ఆయన పాపంతో పూర్తిగా, తుదిగా వ్యవహరించాడు."},
+    {type:"verse", en:"For our sake he made him to be sin who knew no sin, so that in him we might become the righteousness of God.",
+      te:"పాపమెరుగని ఆయనను మనకోసము పాపముగా చేసెను; ఇందువలన మనము ఆయనయందు దేవుని నీతి అగుదుము.",
+      ref:{en:"2 Corinthians 5:21", te:"2 కొరింథీయులకు 5:21"}},
+    {type:"verse", en:"For the wages of sin is death, but the free gift of God is eternal life in Christ Jesus our Lord.",
+      te:"పాపము వలన వచ్చు జీతము మరణము; అయితే దేవుని కృపావరము మన ప్రభువైన క్రీస్తుయేసునందు నిత్యజీవము.",
+      ref:{en:"Romans 6:23", te:"రోమీయులకు 6:23"}},
+    {type:"h", en:"An ongoing dealing, not just a one-time verdict", te:"ఒక్కసారి తీర్పు కాదు, నిరంతర వ్యవహారం"},
+    {type:"p", en:"God's dealing with sin is not only judicial — declaring us forgiven — it is relational and ongoing: \"If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness\" (1 John 1:9). The cross deals with sin's penalty once for all; daily confession and walking in the Spirit deal with sin's ongoing presence in a believer's life.",
+      te:"పాపంతో దేవుని వ్యవహారం కేవలం న్యాయపరమైనది కాదు — మనలను క్షమించబడినవారిగా ప్రకటించడం మాత్రమే కాదు — అది సంబంధపరమైనది, నిరంతరమైనది: \"మన పాపములను మనము ఒప్పుకొనినయెడల, ఆయన నమ్మదగినవాడును నీతిమంతుడును గనుక మన పాపములను క్షమించి సమస్త దుర్నీతినుండి మనలను పవిత్రులనుగా చేయును\" (1 యోహాను 1:9). సిలువ పాపపు శిక్షను ఒక్కసారిగా, శాశ్వతంగా తీర్చివేస్తుంది; ప్రతిదిన ఒప్పుకోలు, ఆత్మలో నడవడం విశ్వాసి జీవితంలో పాపము యొక్క నిరంతర ఉనికితో వ్యవహరిస్తాయి."},
+    {type:"verse", en:"If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness.",
+      te:"మన పాపములను మనము ఒప్పుకొనినయెడల, ఆయన నమ్మదగినవాడును నీతిమంతుడును గనుక మన పాపములను క్షమించి సమస్త దుర్నీతినుండి మనలను పవిత్రులనుగా చేయును.",
+      ref:{en:"1 John 1:9", te:"1 యోహాను 1:9"}}
+  ],
+  story_en:"A man ran up a debt he could never repay in his lifetime and was called before a judge. The judge, bound by law, could not simply wave the debt away without violating justice itself — someone had to pay it. So the judge stepped down from the bench, took off his robe, and paid the debt himself out of his own pocket, then returned to the bench to formally declare the man debt-free. Justice was fully satisfied, and mercy was fully given — at the judge's own cost. That is the cross: God does not overlook sin's debt; He pays it Himself.",
+  story_te:"ఒక వ్యక్తి తన జీవితకాలంలో ఎన్నటికీ తీర్చలేని అప్పు చేసి, న్యాయమూర్తి ముందుకు పిలవబడ్డాడు. ధర్మశాస్త్రానికి కట్టుబడిన న్యాయమూర్తి, న్యాయాన్నే ఉల్లంఘించకుండా ఆ అప్పును కేవలం తుడిచివేయలేకపోయాడు — ఎవరో ఒకరు దానిని చెల్లించాలి. కాబట్టి న్యాయమూర్తి తన పీఠం నుండి దిగివచ్చి, తన అంగీని తీసివేసి, తన సొంత జేబు నుండి ఆ అప్పును తానే చెల్లించి, తిరిగి పీఠం మీదికి వెళ్లి ఆ వ్యక్తిని అప్పులేనివానిగా అధికారికంగా ప్రకటించాడు. న్యాయం పూర్తిగా నెరవేరింది, కరుణ పూర్తిగా ఇవ్వబడింది — న్యాయమూర్తి సొంత మూల్యంతో. సిలువ అంటే అదే: దేవుడు పాప అప్పును చూసీచూడనట్టు ఉండడు; ఆయనే స్వయంగా దానిని చెల్లిస్తాడు."
+}
+
+];
+
+// ---- STATE -------------------------------------------------------------
+let activeId = null;
+let db = null;
+
+// ---- IndexedDB: local-only notes storage --------------------------------
+function openDB(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open("word-study-db", 1);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore("notes", {keyPath:"id"}); };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function getNote(id){
+  if(!db) return "";
+  return new Promise((resolve)=>{
+    const tx = db.transaction("notes","readonly").objectStore("notes").get(id);
+    tx.onsuccess = ()=> resolve(tx.result ? tx.result.text : "");
+    tx.onerror = ()=> resolve("");
+  });
+}
+async function saveNote(id, text){
+  if(!db) return;
+  return new Promise((resolve)=>{
+    const tx = db.transaction("notes","readwrite").objectStore("notes").put({id, text, updated: Date.now()});
+    tx.oncomplete = ()=> resolve();
+  });
+}
+
+// ---- Safe text formatting (escape first, then apply markup) -------------
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str == null ? "" : str;
+  return d.innerHTML;
+}
+function formatInline(str){
+  let s = escapeHtml(str);
+  s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/==(.+?)==/g, "<mark class=\"hl\">$1</mark>");
+  s = s.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  return s;
+}
+
+// ---- RENDER --------------------------------------------------------------
+function renderToc(){
+  const list = document.getElementById("tocList");
+  list.innerHTML = "";
+  SERMONS.slice().sort((a,b)=>a.order-b.order).forEach(s=>{
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.className = "toc-link" + (s.id===activeId ? " active" : "");
+    a.href = "#" + s.id;
+    a.onclick = (e)=>{ e.preventDefault(); openSermon(s.id); };
+    a.innerHTML = `<span class="toc-num">${s.order}.</span>
+      <span class="toc-title">${escapeHtml(s.title_en)}<span class="te">${escapeHtml(s.title_te)}</span></span>`;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
+
+function renderBlocks(blocks){
+  return blocks.map(b=>{
+    if(b.type==="h"){
+      return `<h3 class="bl-h"><div class="en">${formatInline(b.en)}</div><div class="te te">${formatInline(b.te)}</div></h3>`;
+    }
+    if(b.type==="verse"){
+      const refLine = b.ref ? `<cite>— ${escapeHtml(b.ref.en)} <span class="te">(${escapeHtml(b.ref.te)})</span></cite>` : "";
+      return `<blockquote class="verse">
+        <p class="en">${formatInline(b.en)}</p>
+        <p class="te te">${formatInline(b.te)}</p>
+        ${refLine}
+      </blockquote>`;
+    }
+    return `<div class="bl-block">
+      <p class="en">${formatInline(b.en)}</p>
+      <p class="te te">${formatInline(b.te)}</p>
+    </div>`;
+  }).join("");
+}
+
+async function openSermon(id){
+  activeId = id;
+  const s = SERMONS.find(x=>x.id===id);
+  const main = document.getElementById("main");
+  if(!s){ main.innerHTML = `<div style="padding:60px 10px;text-align:center;">Not found.</div>`; return; }
+
+  if(s.status!=="ready"){
+    main.innerHTML = `
+      <div class="sermon-head">
+        <div class="sermon-eyebrow">${s.order}. IN THE SEQUENCE · క్రమంలో</div>
+        <h1 class="sermon-title">${escapeHtml(s.title_en)}</h1>
+        <h1 class="sermon-title te">${escapeHtml(s.title_te)}</h1>
+      </div>
+      <p style="color:var(--ink-soft);">This sermon is being prepared and will appear here automatically once added.<br><span class="te">ఈ పాఠం సిద్ధం చేయబడుతోంది, జోడించిన వెంటనే ఇక్కడ స్వయంచాలకంగా కనిపిస్తుంది.</span></p>`;
+    renderToc();
+    if(window.innerWidth<=860) document.getElementById("indexPanel").classList.remove("open");
+    return;
+  }
+
+  const refsHtml = (s.refs||[]).map(r=>`<span class="ref-chip">${escapeHtml(r.en)}<span class="te">${escapeHtml(r.te)}</span></span>`).join("");
+  const storyNote = s.story_note_en ? `<div class="story-note">${escapeHtml(s.story_note_en)}<br>${escapeHtml(s.story_note_te||"")}</div>` : "";
+
+  main.innerHTML = `
+    <div class="sermon-head">
+      <div class="sermon-eyebrow">${s.order}. IN THE SEQUENCE · క్రమంలో</div>
+      <h1 class="sermon-title">${escapeHtml(s.title_en)}</h1>
+      <h1 class="sermon-title te">${escapeHtml(s.title_te)}</h1>
+      <p class="sermon-subtitle">${escapeHtml(s.subtitle_en||"")}</p>
+      <p class="sermon-subtitle te">${escapeHtml(s.subtitle_te||"")}</p>
+      <div class="refs">${refsHtml}</div>
+      <div class="toolbar">
+        <button class="btn primary" id="printBtn">🖶 Print · ముద్రించు</button>
+      </div>
+    </div>
+    <div>${renderBlocks(s.body)}</div>
+    <div class="story-box">
+      <h4>A REAL-LIFE STORY<span class="te">జీవిత కథ</span></h4>
+      <p class="en">${escapeHtml(s.story_en)}</p>
+      <p class="te">${escapeHtml(s.story_te)}</p>
+      ${storyNote}
+    </div>
+    <div class="notes-box">
+      <h4>My Notes <span class="te">నా గమనికలు</span></h4>
+      <textarea class="notes" id="notesArea" placeholder="Write your notes on this sermon here… / ఈ పాఠం మీద మీ గమనికలు ఇక్కడ వ్రాయండి…"></textarea>
+      <div class="notes-status" id="notesStatus"></div>
+    </div>
+  `;
+
+  document.getElementById("printBtn").onclick = ()=> window.print();
+
+  const notesArea = document.getElementById("notesArea");
+  notesArea.value = await getNote(s.id);
+  let saveTimer;
+  notesArea.addEventListener("input", ()=>{
+    clearTimeout(saveTimer);
+    const el = document.getElementById("notesStatus");
+    if(el) el.textContent = "";
+    saveTimer = setTimeout(async ()=>{
+      await saveNote(s.id, notesArea.value);
+      const el2 = document.getElementById("notesStatus");
+      if(el2) el2.textContent = "Saved · సేవ్ చేయబడింది";
+    }, 500);
+  });
+
+  renderToc();
+  if(window.innerWidth<=860) document.getElementById("indexPanel").classList.remove("open");
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+// ---- Background sync (silent; never disrupts the reading view) ----------
+let pendingContent = null;
+async function checkForUpdates(){
+  if(!CONTENT_URL) return;
+  try{
+    document.getElementById("syncDot").classList.add("pending");
+    const res = await fetch(CONTENT_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error("bad response");
+    const data = await res.json();
+    if(JSON.stringify(data) !== JSON.stringify(SERMONS)){
+      pendingContent = data;
+      document.getElementById("updateToast").classList.add("show");
+    }
+    document.getElementById("syncDot").classList.remove("pending");
+  }catch(e){
+    document.getElementById("syncDot").classList.remove("pending");
+  }
+}
+document.getElementById("applyUpdate").onclick = ()=>{
+  if(pendingContent){
+    SERMONS = pendingContent;
+    pendingContent = null;
+    document.getElementById("updateToast").classList.remove("show");
+    renderToc();
+    if(activeId) openSermon(activeId);
+  }
+};
+
+// ---- INIT ------------------------------------------------------------
+document.getElementById("menuToggle").onclick = ()=>{
+  document.getElementById("indexPanel").classList.toggle("open");
+};
+
+(async function init(){
+  try{ db = await openDB(); }catch(e){ /* notes storage unavailable; app still works */ }
+  renderToc();
+  const first = SERMONS.slice().sort((a,b)=>a.order-b.order).find(s=>s.status==="ready") || SERMONS[0];
+  openSermon(first.id);
+  if(CONTENT_URL){
+    checkForUpdates();
+    setInterval(checkForUpdates, SYNC_INTERVAL_MS);
+  }
+})();
+</script>
+</body>
+</html>
